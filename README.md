@@ -26,6 +26,8 @@
 金融事件信息抽取系统实现及关联图可视化<br>
 使用 flask + html 进行构建<br>
 IE-System/Tool中
+| 模块                | 功能              |
+| ----                | ----              |
 | PDF2TXT.py          | PDF转为TXT        |
 | Text_Classify       | 段落级文本划分     |
 | ZhipuControlAPI.py  | 大模型抽取主要程序 |
