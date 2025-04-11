@@ -41,3 +41,5 @@ IE-System/Tool中
 | ZhipuControlAPI.py  | 大模型抽取主要程序 |
 | Draw_Pictures.py    | 绘画事件关联图     |
 
+注意：ZhipuControlAPI文件中需要自主提供API_key
+
