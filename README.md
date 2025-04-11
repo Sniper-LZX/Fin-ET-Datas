@@ -23,14 +23,14 @@
 | RSI       | 股价相对强弱指数   |
 
 ## IE-System
-金融事件信息抽取系统实现及关联图可视化
-使用 flask + html 进行构建
-│
-├── dir1/
-│   └── Tool/
-|       ├── PDF2TXT.py            // PDF转为TXT
-|       ├── Text_Classify         // 段落级文本划分
-|       ├── ZhipuControlAPI.py    // 大模型抽取主要程序
-│       └── Draw_Pictures.py      // 绘画事件关联图
+金融事件信息抽取系统实现及关联图可视化<br>
+使用 flask + html 进行构建<br>
+IE-System<br>
+|<br>
+│   └── Tool<br>
+|       ├── PDF2TXT.py            // PDF转为TXT<br>
+|       ├── Text_Classify         // 段落级文本划分<br>
+|       ├── ZhipuControlAPI.py    // 大模型抽取主要程序<br>
+│       └── Draw_Pictures.py      // 绘画事件关联图<br>
 
 
