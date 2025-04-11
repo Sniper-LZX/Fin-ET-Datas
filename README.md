@@ -21,7 +21,7 @@
 | Type_Time | 主题词（时间范围） |
 | Reason    | 提取原因          |
 | RSI       | 股价相对强弱指数   |
-
+![image](数据类型分布.png)
 ## IE-System
 金融事件信息抽取系统实现及关联图可视化<br>
 使用 flask + html 进行构建<br>
