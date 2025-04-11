@@ -25,8 +25,8 @@
 ## IE-System
 金融事件信息抽取系统实现及关联图可视化
 使用 flask + html 进行构建
-IE-System/
-|
+│
+├── dir1/
 │   └── Tool/
 |       ├── PDF2TXT.py            // PDF转为TXT
 |       ├── Text_Classify         // 段落级文本划分
