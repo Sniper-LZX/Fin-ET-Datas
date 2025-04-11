@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>金融事件信息抽取系统</title>
+    <!-- 引入FontAwesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 内联CSS样式 -->
+    <style>
+        /* 新增背景样式 */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(to top left, #a8edea, #fed6e3);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 内容均匀分布 */
+            align-items: center;
+        }
+
+        /* 标题样式 */
+        .main-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        /* 下载链接样式 */
+        .download-link {
+            position: absolute;
+            top: 500px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 25px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        .theme-link {
+            color: #000000;
+        }
+
+        /* 页面布局 */
+        .header-section {
+            text-align: center;
+            padding: 20px 20px;
+        }
+
+        /* 卡片容器布局 */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* 卡片样式 */
+        .card {
+            width: 300px;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 70px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 卡片标题样式 */
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* 卡片图标样式 */
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        /* 卡片按钮样式 */
+        .card-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background: linear-gradient(135deg, #007bff, #00bfff);
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .card-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #0099cc);
+        }
+
+        /* 第二个卡片的特殊样式（Fin-ET数据集操作卡片） */
+        .card.fin-et-card .card-btn {
+            background: linear-gradient(135deg, #28a745, #76c000);
+        }
+
+        .card.fin-et-card .card-btn:hover {
+            background: linear-gradient(135deg, #218838, #6cbe00);
+        }
+
+        /* 第三个卡片的特殊样式——橙色卡片样式 */
+        .card.et-re-card .card-btn {
+            background: linear-gradient(135deg, #ff8c42, #ffb366);
+        }
+
+        .card.et-re-card .card-btn:hover {
+            background: linear-gradient(135deg, #cc7034, #ffa050);
+        }
+
+        /* 数据集描述文字样式 */
+        .dataset-description {
+            color: #444;
+            text-align: justify; /* 文字分散对齐 */
+            margin-top: 10px;
+            max-width: 900px;
+            line-height: 1.8;
+            margin-bottom: 150px;
+            padding: 20px; /* 内边距 */
+            background: #e0e3e6; /* 背景色 */
+            border-radius: 10px; /* 圆角 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 阴影 */
+            border: 1px solid #ddd; /* 边框 */
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 下载数据集链接 -->
+    <div class="header-section">
+        <h1 class="main-title">金融事件信息抽取系统</h1>
+        <div class="card-container">
+            <!-- 自定义事件信息提取卡片 -->
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="card-title">年报事件提取</div>
+                <a href="/event_extract" class="card-btn">开始提取</a>
+            </div>
+
+            <!-- Fin-ET数据集内容卡片 -->
+            <div class="card fin-et-card">
+                <div class="card-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="card-title">Fin-ET数据集</div>
+                <a href="/fin_et_operations" class="card-btn">查看数据</a>
+            </div>
+
+            <!-- 事件关联图卡片 -->
+            <div class="card et-re-card">
+                <div class="card-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="card-title">事件关联图</div>
+                <a href="/event_relation_graph" class="card-btn">生成关联图</a>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://github.com/Sniper-LZX/Fin-ET-Datas" class="download-link" target="_blank">
+        <i class="fas fa-download"></i> Fin-ET数据集
+    </a>
+
+    <!-- 数据集描述文字 -->
+    <div class="dataset-description">
+        数据集通过整合两个异构基础数据源构建而成。主干部分依托上海证券交易所官方披露的上市公司年度财务报告，另一部分由企业历史股票价格数据计算得出。 数据集覆盖208家上市公司的8392份年报，包含所有年报的“重要事项”、“管理层情况”、“股本变动”三部分章节的正文内容。最终从18222个段落中标注了20434个主题词及其时间范围，并归纳为<a href="https://github.com/Sniper-LZX/Fin-ET-Datas" class="theme-link" target="_blank">35种主题类型</a>。
+    </div>
+</body>
+</html>

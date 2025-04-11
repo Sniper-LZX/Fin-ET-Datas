@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义年报事件提取系统</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /*background: linear-gradient(to bottom right, #dff0ff, #b3b3e6);*/
+            background: #dff0ff;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+
+        /* 主容器 */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 标题区域 */
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            color: #2c3e50;
+            font-size: 2.6em;
+            margin: 60px 0;
+            letter-spacing: 1.5px;
+        }
+
+        /* 左侧功能区域 */
+        .function-panel {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 功能模块公共样式 */
+        .module-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* 右侧内容区域 */
+        .content-panel {
+            flex: 1;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            height: 900px; /* 与三个模块总高度一致 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 表单元素样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* 按钮样式 */
+        .action-btn {
+            background: #3498db;
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        /* 内容显示区域 */
+        .file-path {
+            font-family: monospace;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        .content-display {
+            flex: 1;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed; /* 固定位置 */
+            top: 20px; /* 距离顶部20px */
+            left: 20px; /* 距离左边20px */
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #007bff, #00bfff);
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #0099cc);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control {
+            width: calc(100% - 24px); /* 减去内边距和边框的宽度 */
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box; /* 确保内边距和边框包含在宽度内 */
+        }
+
+        .action-btn {
+            width: 100%;
+            background: #3498db;
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 文件选择箭头 */
+        select {
+            appearance: none;
+            background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237f8c8d'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") no-repeat right 12px center/16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回按钮 -->
+    <a href="/" class="back-btn">返回主页</a>
+    <!-- 标题和上传区域 -->
+    <div class="header-section">
+        <h1 class="main-title">自定义年报事件提取系统</h1>
+        <div class="module-card" style="max-width: 600px; margin: 0 auto;">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file">选择上传文件</label>
+                    <input type="file" name="file" id="file" required class="form-control">
+                </div>
+                <button type="submit" class="action-btn">上传文件</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- 左侧功能模块 -->
+        <div class="function-panel">
+            <!-- PDF 转 TXT -->
+            <div class="module-card">
+                <h2>PDF转文本</h2>
+                <form id="convert-form">
+                    <div class="form-group">
+                        <label for="pdf_filename">选择PDF文件</label>
+                        <select name="pdf_filename" id="pdf_filename" required>
+                            <option value="">-- 请选择 --</option>
+                            {% for file in os.listdir('uploads') if file.endswith('.pdf') %}
+                            <option value="{{ file }}">{{ file }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="action-btn">开始转换</button>
+                </form>
+            </div>
+
+            <!-- 段落划分 -->
+            <div class="module-card">
+                <h2>段落划分处理</h2>
+                <form id="classify-form">
+                    <div class="form-group">
+                        <label for="txt_filename">选择文本文件</label>
+                        <select name="txt_filename" id="txt_filename" required>
+                            <option value="">-- 请选择 --</option>
+                            {% for file in os.listdir('uploads') if file.endswith('.txt') or file.endswith('.json') %}
+                            <option value="{{ file }}">{{ file }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="action-btn">执行划分</button>
+                </form>
+            </div>
+
+            <!-- 大模型信息抽取 -->
+            <div class="module-card">
+                <h2>大模型信息抽取</h2>
+                <form id="extract-form">
+                    <div class="form-group">
+                        <label for="api_key">API密钥</label>
+                        <input type="text" name="api_key" id="api_key" required style="width: calc(100% - 25px);">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_filename_extract">选择处理文件</label>
+                        <select name="txt_filename" id="txt_filename_extract" required>
+                            <option value="">-- 请选择 --</option>
+                            {% for file in os.listdir('uploads') if file.endswith('_划分.txt') %}
+                            <option value="{{ file.replace('_划分.txt', '.txt') }}">{{ file }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="action-btn">开始抽取</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 右侧内容显示 -->
+        <div class="content-panel">
+            <div class="file-path" id="file-path">当前文件路径：等待操作...</div>
+            <div class="content-display" id="content-display">
+                文件内容将在此处显示...
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示容器 -->
+    <div id="message-container"></div>
+
+    <script>
+        // 动态更新文件路径显示
+        function updateFilePathDisplay(filePath) {
+            const pathDisplay = document.getElementById('file-path');
+            // 去掉多余的 uploads/ 前缀
+            const normalizedPath = filePath.replace(/^uploads[\\/]/, '');
+            pathDisplay.textContent = `当前文件路径：uploads/${normalizedPath}`;
+        }
+
+        // 显示文件内容
+        async function displayFileContent(filePath) {
+            try {
+                // 确保路径以 uploads/ 开头
+                const normalizedPath = filePath.startsWith('uploads/') ? filePath : `uploads/${filePath}`;
+
+                // 发起请求时传递完整路径
+                const response = await fetch(`/file-content?path=${encodeURIComponent(normalizedPath)}`);
+                const content = await response.text();
+
+                // 判断文件类型
+                if (filePath.endsWith('.json')) {
+                    // 如果是 JSON 文件，格式化显示
+                    try {
+                        const jsonData = JSON.parse(content);
+                        document.getElementById('content-display').textContent = JSON.stringify(jsonData, null, 2);
+                    } catch (error) {
+                        document.getElementById('content-display').textContent = 'JSON 文件解析失败';
+                        showMessage('error', 'JSON 文件解析失败');
+                    }
+                } else if (filePath.endsWith('.txt')) {
+                    // 如果是 TXT 文件，直接显示
+                    document.getElementById('content-display').textContent = content;
+                } else {
+                    // 其他文件类型
+                    document.getElementById('content-display').textContent = '不支持的文件类型';
+                    showMessage('error', '不支持的文件类型');
+                }
+
+                // 更新文件路径显示
+                updateFilePathDisplay(filePath);
+            } catch (error) {
+                showMessage('error', '无法加载文件内容');
+                document.getElementById('content-display').textContent = '文件内容加载失败';
+            }
+        }
+
+        // 显示提示信息
+        function showMessage(type, text, duration = 3000) {
+            const container = document.getElementById('message-container');
+            const msg = document.createElement('div');
+            msg.className = `alert-message ${type}`;
+            msg.textContent = text;
+
+            // 添加关闭按钮
+            const closeButton = document.createElement('button');
+            closeButton.textContent = '×';
+            closeButton.style.marginLeft = '10px';
+            closeButton.style.background = 'none';
+            closeButton.style.border = 'none';
+            closeButton.style.color = 'white';
+            closeButton.style.cursor = 'pointer';
+            closeButton.onclick = () => msg.remove();
+
+            msg.appendChild(closeButton);
+            container.appendChild(msg);
+
+            // 自动消失
+            if (duration > 0) {
+                setTimeout(() => {
+                    msg.remove();
+                }, duration);
+            }
+        }
+
+        // 在文件选择时更新文件路径显示
+        document.getElementById('pdf_filename').addEventListener('change', function() {
+            const selectedFile = this.value;
+            if (selectedFile) {
+                updateFilePathDisplay(selectedFile);
+            }
+        });
+
+        document.getElementById('txt_filename').addEventListener('change', function() {
+            const selectedFile = this.value;
+            if (selectedFile) {
+                updateFilePathDisplay(selectedFile);
+            }
+        });
+
+        document.getElementById('txt_filename_extract').addEventListener('change', function() {
+            const selectedFile = this.value;
+            if (selectedFile) {
+                updateFilePathDisplay(selectedFile);
+            }
+        });
+
+        // PDF 转 TXT 表单提交
+        document.getElementById('convert-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            // 显示“转换中...”提示
+            showMessage('info', '转换中...', 0);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // 显示“转换完成！”提示
+                    showMessage('success', '转换完成！');
+
+                    // 更新文件路径显示
+                    updateFilePathDisplay(result.txt_file_path.replace(/^uploads[\\/]/, ''));
+
+                    // 加载并显示转换后的文件内容
+                    displayFileContent(result.txt_file_path.replace(/^uploads[\\/]/, ''));
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                showMessage('error', '请求处理失败');
+            }
+        });
+
+        // 段落划分表单提交
+        document.getElementById('classify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            // 显示“划分中...”提示
+            showMessage('info', '划分中...', 0);
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // 显示“划分完成！”提示
+                    showMessage('success', '划分完成！');
+
+                    // 更新文件路径显示
+                    updateFilePathDisplay(formData.get('txt_filename').replace('.txt', '_划分.txt'));
+
+                    // 加载并显示划分后的文件内容
+                    displayFileContent(formData.get('txt_filename').replace('.txt', '_划分.txt'));
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                showMessage('error', '请求处理失败');
+            }
+        });
+
+        // 大模型信息抽取表单提交
+        document.getElementById('extract-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            // 显示“抽取中...”提示
+            showMessage('info', '抽取中...', 0);
+
+            try {
+                const response = await fetch('/extract', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // 显示“抽取完成！”提示
+                    showMessage('success', '抽取完成！');
+
+                    // 更新文件路径显示
+                    updateFilePathDisplay(result.json_file_path.replace(/^uploads[\\/]/, ''));
+
+                    // 加载并显示抽取后的文件内容
+                    displayFileContent(result.json_file_path.replace(/^uploads[\\/]/, ''));
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                showMessage('error', '请求处理失败');
+            }
+        });
+
+        // 动态更新文件选择框
+        function updateFileSelect(selectId, filterFunc) {
+            fetch('/file-list')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const files = Array.from(doc.querySelectorAll('li')).map(li => li.textContent);
+
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">-- 请选择 --</option>';
+                    files.filter(filterFunc).forEach(file => {
+                        const option = document.createElement('option');
+                        option.value = file;
+                        option.textContent = file;
+                        select.appendChild(option);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>

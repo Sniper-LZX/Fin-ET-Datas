@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>事件关联图</title>
+    <style>
+        body {
+            margin: 0;
+            /*background: linear-gradient(to bottom right, #fff0da, #b3b3e6);*/
+            background: #fff0da;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            height: 1600px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff8c42, #ffb366); /* 橙色渐变背景 */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #cc7034, #ffa050); /* 深橙色渐变 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .random-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #ff8c42, #ffb366); /* 橙色渐变背景 */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            position: absolute;
+            top: 90px;
+            left: 49.6%;
+            transform: translateX(-50%);
+        }
+
+        .random-btn:hover {
+            font-size: 25px;
+            background: linear-gradient(135deg, #cc7034, #ffa050); /* 深橙色渐变 */
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .data-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 1200px; /* 固定宽度 */
+            height: 500px; /* 固定高度 */
+            position: absolute;
+            top: 180px;
+            bottom: 540px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            overflow-y: auto; /* 允许垂直滚动 */
+            max-width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 顶部对齐 */
+        }
+
+        .graph-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start; /* 关键修改 */
+            /*grid-template-columns: repeat(1, 1fr); !* 每行显示两个，每个占据等宽 *!*/
+            overflow-x: auto; /* 允许横向滚动 */
+            gap: 20px; /* 图片之间的间距 */
+            padding: 20px; /* 调整padding */
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 1200px; /* 固定宽度 */
+            min-height: 600px; /* 固定高度 */
+            position: absolute;
+            top: 750px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            max-width: 90%;
+            align-items: flex-start; /* 顶部对齐 */
+            scroll-padding-left: 20px;
+        }
+
+        .graph-container img {
+            max-width: 100%;
+            max-height: 760px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-container.empty, .graph-container.empty {
+            color: #666;
+            font-style: italic;
+        }
+
+        .data-container.empty::before {
+            content: "请随机选择数据";
+            font-size: 24px;
+        }
+
+        .graph-container.empty::before {
+            content: "请点击上方数据中的查看图片";
+            text-align: center;
+            font-size: 24px;
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: max-content;
+            z-index: 1;
+        }
+
+        /* 美化滚动条 */
+        .data-container::-webkit-scrollbar {
+            width: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .data-container::-webkit-scrollbar-thumb {
+            background: #007bff;
+            border-radius: 4px;
+        }
+
+        .data-container p {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .data-container ol {
+            margin: 10px 0;
+            padding-left: 40px;
+        }
+
+        .data-container ul {
+            list-style-type: disc;
+            padding-left: 30px;
+            margin: 10px 0;
+        }
+
+        .data-container li {
+            font-size: 20px;
+            margin: 8px 0;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 1100px;
+            white-space: nowrap; /* 防止换行 */
+            overflow-x: auto; /* 允许横向滚动 */
+        }
+
+        /* 美化滚动条样式 */
+        .data-container li::-webkit-scrollbar {
+            height: 8px; /* 滚动条高度 */
+            background-color: #f5f5f5; /* 滚动条背景颜色 */
+        }
+
+        .data-container li::-webkit-scrollbar-thumb {
+            border-radius: 4px; /* 滚动条滑块圆角 */
+            background-color: #888; /* 滚动条滑块颜色 */
+        }
+
+        .data-container li::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* 滚动条滑块在鼠标悬停时的颜色 */
+        }
+
+
+        .graph-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .graph-btn:hover {
+            font-size: 25px;
+            background: linear-gradient(135deg, #218838, #1aa179);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 候选列表的序号样式 */
+        #context-list {
+            list-style-type: none; /* 禁用默认序号 */
+            padding-left: 0; /* 去掉默认左边距 */
+            counter-reset: candidate-counter; /* 初始化计数器 */
+        }
+        #candidates-list {
+            list-style-type: none; /* 禁用默认序号 */
+            padding-left: 0; /* 去掉默认左边距 */
+        }
+
+        #context-list li, #candidates-list li {
+            counter-increment: candidate-counter; /* 递增计数器 */
+            font-size: 20px;
+            margin: 8px 0;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 1100px;
+            white-space: nowrap; /* 防止换行 */
+            overflow-x: auto; /* 允许横向滚动 */
+            position: relative; /* 为序号定位 */
+        }
+
+        /* 添加序号 */
+        #context-list li::before, #candidates-list li::before {
+            content: counter(candidate-counter) ". "; /* 显示计数器值 */
+            position: sticky; /* 固定序号位置 */
+            left: 0; /* 固定在左侧 */
+            background-color: #ADD8E6; /* 继承背景色 */
+            padding-right: 3px; /* 序号与内容的间距 */
+            z-index: 1; /* 确保序号在内容上方 */
+        }
+
+        #example-image {
+            max-width: 100%;
+            max-height: 460px;
+            display: none;
+            margin: 10px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+<body>
+    <h1>事件关联图页面</h1>
+    <button class="random-btn" onclick="fetchRandomData()">随机</button>
+    <a href="/" class="back-btn">返回主页</a>
+
+    <!-- 数据容器 -->
+    <div class="data-container empty" id="data-container">
+        <!-- 初始提示信息通过CSS伪元素显示 -->
+    </div>
+    <!-- 图片容器 -->
+    <div class="graph-container empty" id="graph-container">
+        <img src="" alt="示例图片" id="example-image" style="display:none;">
+    </div>
+
+
+
+    <script>
+        // 初始化状态
+        let isFirstLoad = true;
+        let currentGraphs = null; // 用于存储当前的矩阵数据
+
+        // 获取随机数据
+        async function fetchRandomData() {
+            try {
+                // 重置图片容器状态
+                const imageContainer = document.getElementById('graph-container');
+                const exampleImage = document.getElementById('example-image');
+
+                // 恢复空状态
+                imageContainer.classList.add('empty');
+                exampleImage.style.display = 'none';
+                exampleImage.src = '';  // 清空图片源
+
+                // 如果有错误提示也需要清除
+                imageContainer.innerHTML = '<img src="" alt="示例图片" id="example-image" style="display:none;">';
+
+                // 获取新数据
+                const response = await fetch('/api/data/random');
+                const data = await response.json();
+                displayData(data);
+
+            } catch (error) {
+                console.error('获取数据失败:', error);
+            }
+        }
+
+        // 展示数据
+        // 展示数据（优化版）
+        function displayData(data) {
+            const container = document.getElementById('data-container');
+
+            // 先发起数据请求再创建DOM
+            fetch('/get_full_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ith: data.ith }),
+            })
+            .then(response => response.json())
+            .then(fullTextData => {
+                // 移除初始状态
+                if (isFirstLoad) {
+                    container.classList.remove('empty');
+                    container.innerHTML = '';
+                    isFirstLoad = false;
+                }
+
+                // 创建内容结构（延迟到数据获取后）
+                const content = document.createElement('div');
+
+                // 处理候选随机化
+                let shuffledCandidates = [...data.candidates];
+                let randomIndex = Math.floor(Math.random() * shuffledCandidates.length);
+                if (randomIndex !== 0) {
+                    [shuffledCandidates[0], shuffledCandidates[randomIndex]] =
+                    [shuffledCandidates[randomIndex], shuffledCandidates[0]];
+                }
+
+                // 生成基础模板
+                content.innerHTML = `
+                    <p><strong>编号:</strong> <span id="ith">${data.ith}</span></p>
+                    <p><strong>上下文:</strong></p>
+                    <ul id="context-list"></ul>
+                    <p><strong>候选:</strong></p>
+                    <ol id="candidates-list"></ol>
+                    <p><strong>答案:</strong> <span id="ans">${randomIndex + 1}</span></p>
+                    <button class="graph-btn" onclick="generateAndShowGraph()">查看图片</button>
+                `;
+
+                // 填充列表数据
+                const contextList = content.querySelector('#context-list');
+                const candidatesList = content.querySelector('#candidates-list');
+
+                // 切片处理
+                const contextFullText = fullTextData.slice(0, data.context.length);
+                const candidatesFullText = fullTextData.slice(data.context.length);
+
+                // 动态创建列表项
+                contextFullText.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    contextList.appendChild(li);
+                });
+
+                candidatesFullText.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    candidatesList.appendChild(li);
+                });
+
+                // 整体插入DOM
+                container.innerHTML = '';
+                container.appendChild(content);
+
+                // 保存图形数据
+                currentGraphs = data.graph;
+            })
+            .catch(error => {
+                console.error('数据获取失败:', error);
+                container.innerHTML = `<p style="color:red">数据加载失败，请刷新重试</p>`;
+            });
+        }
+
+        // 生成并显示图片
+        async function generateAndShowGraph() {
+            if (!currentGraphs) {
+                console.error('未找到矩阵数据');
+                return;
+            }
+
+            try {
+                // 发送矩阵数据到后端生成图片
+                const response = await fetch('/generate_graph', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ graphs: currentGraphs }),
+                });
+
+                const result = await response.json();
+
+                if (result.image_urls) {
+                    // 显示图片
+                    const imageContainer = document.getElementById('graph-container');
+                    imageContainer.classList.remove('empty');
+                    imageContainer.innerHTML = ''; // 清空旧图片
+
+                    // 动态插入图片
+                    result.image_urls.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = "事件关联图";
+                        imageContainer.appendChild(img);
+                    });
+
+                    // 自动滚动到图片容器
+                    imageContainer.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else {
+                    console.error('生成图片失败:', result.error);
+                }
+            } catch (error) {
+                console.error('请求失败:', error);
+            }
+        }
+    </script>
+</body>
+</html>

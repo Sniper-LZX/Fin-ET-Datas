@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>金融事件信息抽取系统</title>
+    <!-- 引入FontAwesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 内联CSS样式 -->
+    <style>
+        /* 新增背景样式 */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(to top left, #a8edea, #fed6e3);
+        }
+        /* 基础按钮样式 */
+        .action-btn {
+            display: inline-block;
+            width: 260px; /* 设置固定宽度 */
+            padding: 15px 26px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #007bff, #00bfff); /* 蓝色渐变背景 */
+            border: none;
+            border-radius: 10px; /* 圆角 */
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            margin: 15px; /* 按钮之间的间距 */
+        }
+
+        /* 悬停效果 */
+        .action-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #0099cc); /* 深蓝色渐变 */
+            transform: translateY(-2px); /* 轻微上移 */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* 阴影加深 */
+        }
+
+        /* 点击效果 */
+        .action-btn:active {
+            transform: translateY(0); /* 恢复原位 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 阴影恢复 */
+        }
+
+        /* 第二个按钮的特殊样式（Fin-ET数据集操作按钮） */
+        .action-btn.fin-et-btn {
+            background: linear-gradient(135deg, #28a745, #76c000); /* 绿色渐变背景 */
+        }
+
+        .action-btn.fin-et-btn:hover {
+            background: linear-gradient(135deg, #218838, #6cbe00); /* 深绿色渐变 */
+        }
+
+        /* 第三个按钮的特殊样式——橙色按钮样式 */
+        .action-btn.et-re-btn {
+            background: linear-gradient(135deg, #ff8c42, #ffb366); /* 橙色渐变背景 */
+        }
+
+        .action-btn.et-re-btn:hover {
+            background: linear-gradient(135deg, #cc7034, #ffa050); /* 深橙色渐变 */
+        }
+
+        /* 图标样式 */
+        .action-btn i {
+            margin-right: 8px; /* 图标与文字之间的间距 */
+        }
+
+        /* 标题样式 */
+        .main-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 页面布局 */
+        .header-section {
+            text-align: center;
+            padding: 20px 20px;
+        }
+
+        .button-main-container {
+            flex: 1;              /* 占据剩余空间 */
+            display: flex;
+            justify-content: center; /* 垂直居中 */
+            padding: 210px;
+        }
+
+        /* 按钮容器布局 */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* 按钮之间的间距 */
+        }
+
+        /* 前两个按钮水平排列 */
+        .horizontal-buttons {
+            display: flex;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <h1 class="main-title">金融事件信息抽取系统</h1>
+        <div class="button-main-container">
+            <div class="button-container">
+                <!-- 前两个按钮水平排列 -->
+                <div class="horizontal-buttons">
+                    <a href="/event_extract" class="action-btn">
+                        <i class="fas fa-upload"></i> 自定义事件信息提取
+                    </a>
+                    <a href="/fin_et_operations" class="action-btn fin-et-btn">
+                        <i class="fas fa-database"></i> Fin-ET数据集内容
+                    </a>
+                </div>
+                <!-- 第三个按钮垂直排列 -->
+                <a href="/event_relation_graph" class="action-btn et-re-btn">
+                    <i class="fas fa-project-diagram"></i> 事件关联图
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

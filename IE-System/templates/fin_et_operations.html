@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据筛选器</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            /*background: linear-gradient(to bottom right, #c1e1c1, #b3b3e6);*/
+            background: #e1fedc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 180vh;
+        }
+
+        #reportSelect {
+            height: 300px; /* 设置选择框的高度 */
+        }
+
+        #idSelect {
+            height: 200px; /* 设置选择框的高度 */
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed; /* 固定位置 */
+            top: 20px; /* 距离顶部20px */
+            left: 20px; /* 距离左边20px */
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #28a745, #76c000); /* 绿色渐变背景 */
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #218838, #6cbe00); /* 深绿色渐变 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-button button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-button button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 筛选框 */
+        .filter-box {
+            background-color: white;
+            margin: 80px auto 10px; /* 水平居中 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 66%; /* 宽度为三分之二 */
+        }
+
+        .filter-box h2 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .filter-box label {
+            font-weight: bold;
+            color: #555;
+            font-size: 20px;
+        }
+
+        .filter-box select {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            font-size: 18px;
+        }
+
+        .filter-box select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .filter-box button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .filter-box button:hover {
+            background-color: #218838;
+        }
+
+        /* 结果展示 */
+        #resultContainer {
+            margin: 80px auto; /* 水平居中 */
+            width: 70%; /* 宽度为三分之二 */
+        }
+
+        #resultContainer h3 {
+            font-size: 22px;
+            color: #333;
+        }
+
+        .result-item {
+            background-color: white;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 20px;
+        }
+
+        .result-item div {
+            margin: 15px 0;
+        }
+
+        .result-item label {
+            font-weight: bold;
+            margin: 8px 0;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+            font-size: 20px;
+        }
+
+        .result-item input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: calc(100% - 130px);
+            font-size: 18px;
+        }
+
+        .result-item input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* 无结果提示 */
+        #resultContainer p {
+            color: #777;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 返回按钮 -->
+    <a href="/" class="back-btn">返回主页</a>
+
+    <!-- 筛选框 -->
+    <div class="filter-box">
+        <h2>数据内容展示</h2>
+
+        <!-- 第一步：Report选择 -->
+        <div>
+            <label>选择Report（可多选）:</label>
+            <select id="reportSelect" multiple>
+                {% for report in reports %}
+                    <option value="{{ report }}">{{ report }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 第二步：ID选择 -->
+        <div style="margin-top: 20px;">
+            <label>选择ID:</label>
+            <select id="idSelect" multiple disabled>
+                <option>请先选择Report</option>
+            </select>
+        </div>
+
+        <button onclick="loadData()">显示结果</button>
+    </div>
+
+    <!-- 结果展示 -->
+    <div id="resultContainer"></div>
+
+    <script>
+        // 当Report选择变化时加载对应的ID
+        $('#reportSelect').change(function() {
+            const selectedReports = $(this).val();
+
+            if (selectedReports && selectedReports.length > 0) {
+                $.get('/get_ids', { 'reports[]': selectedReports }, function(data) {
+                    $('#idSelect').empty().prop('disabled', false);
+                    data.forEach(id => {
+                        $('#idSelect').append(new Option(id, id));
+                    });
+                });
+            } else {
+                $('#idSelect').empty().prop('disabled', true);
+            }
+        });
+
+        // 加载并显示筛选结果
+        function loadData() {
+            const selectedIds = $('#idSelect').val();
+            const selectedReports = $('#reportSelect').val();
+
+            // 打印调试信息
+            console.log("Selected Reports:", selectedReports);
+            console.log("Selected IDs:", selectedIds);
+
+            // 检查是否选择了年报文件和ID
+            if (!selectedReports || selectedReports.length === 0) {
+                alert("未选择年报文件");
+                return;
+            }
+
+            if (!selectedIds || selectedIds.length === 0) {
+                alert("未选择ID");
+                return;
+            }
+
+            $.get('/get_data', {
+                'reports[]': selectedReports,
+                'ids[]': selectedIds
+            }, function(data) {
+                console.log("Response Data:", data); // 打印后端返回的数据
+                let html = '<h3>筛选结果</h3>';
+
+                if (data.length > 0) {
+                    // 定义键的顺序
+                    const keyOrder = ["Id", "Report", "Tag", "Input", "Type_Time", "Reason", "RSI"];
+
+                    data.forEach(item => {
+                        html += `<div class="result-item">`;
+                        // 按定义顺序遍历键
+                        keyOrder.forEach(key => {
+                            if (item.hasOwnProperty(key)) {
+                                html += `
+                                    <div>
+                                        <label>${key}:</label>
+                                        <input type="text" value="${item[key]}" readonly>
+                                    </div>`;
+                            }
+                        });
+                        html += `</div>`;
+                    });
+                } else {
+                    html += '<p>没有找到匹配的结果</p>';
+                }
+
+                $('#resultContainer').html(html);
+            });
+        }
+    </script>
+</body>
+</html>
